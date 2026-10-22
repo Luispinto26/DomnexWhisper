@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>pt-PT</string>
+	<key>CFBundleDisplayName</key>
+	<string>DomnexWhisper</string>
+	<key>CFBundleExecutable</key>
+	<string>DomnexWhisper</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.luispinto.domnexwhisper</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>DomnexWhisper</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>0.1.0</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>14.2</string>
+	<key>LSUIElement</key>
+	<true/>
+	<key>NSHighResolutionCapable</key>
+	<true/>
+	<key>NSAudioCaptureUsageDescription</key>
+	<string>Durante as reuniões que gravas, o DomnexWhisper ouve o som do computador para transcrever o que dizem os outros participantes. O áudio é processado no Mac e não é guardado.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>O DomnexWhisper usa o microfone para transcrever o que dizes enquanto manténs a tecla de atalho. O áudio é processado no Mac.</string>
+</dict>
+</plist>
