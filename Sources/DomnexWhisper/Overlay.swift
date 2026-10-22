@@ -26,13 +26,21 @@ final class OverlayModel: ObservableObject {
 /// It never takes focus, so the app being dictated into stays active.
 final class OverlayController {
     private let model = OverlayModel()
-    private let panel: NSPanel
+    private var panel: NSPanel
     private let edgeGlow = EdgeGlowController()
     private var hideWork: DispatchWorkItem?
     private var previewWork: DispatchWorkItem?
 
     init() {
-        panel = NSPanel(
+        panel = Self.makePanel(model: model)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+            guard AppSettings.shared.edgeGlowEnabled, let screen = NSScreen.main else { return }
+            self?.edgeGlow.prepare(for: screen)
+        }
+    }
+
+    private static func makePanel(model: OverlayModel) -> NSPanel {
+        let panel = NSPanel(
             contentRect: NSRect(x: 0, y: 0, width: 220, height: 44),
             styleMask: [.nonactivatingPanel, .borderless],
             backing: .buffered,
@@ -52,20 +60,23 @@ final class OverlayController {
         let host = NSHostingView(rootView: OverlayView(model: model))
         host.frame = panel.contentRect(forFrameRect: panel.frame)
         panel.contentView = host
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
-            guard AppSettings.shared.edgeGlowEnabled, let screen = NSScreen.main else { return }
-            self?.edgeGlow.prepare(for: screen)
-        }
+        return panel
     }
 
     func show(_ state: OverlayState) {
         hideWork?.cancel()
         model.state = state
         if state != .recording { model.level = 0 }
+        // A long-lived panel can stop appearing over full-screen apps (seen with Claude in full
+        // screen), while a fresh one always does; so each appearance gets a new panel.
+        if !panel.isVisible {
+            panel.close()
+            panel = Self.makePanel(model: model)
+        }
         let screen = currentScreen()
         position(on: screen)
         panel.orderFrontRegardless()
+        logVisibility(state)
 
         guard AppSettings.shared.edgeGlowEnabled, let screen else { return edgeGlow.hide() }
         switch state {
@@ -107,6 +118,14 @@ final class OverlayController {
         }
         previewWork = show
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.12, execute: show)
+    }
+
+    private func logVisibility(_ state: OverlayState) {
+        let panel = panel
+        Log.app.notice("overlay \(state.label, privacy: .public): visible=\(panel.isVisible) activeSpace=\(panel.isOnActiveSpace) appActive=\(NSApp.isActive)")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            Log.app.notice("overlay after 0.3s: occlusionVisible=\(panel.occlusionState.contains(.visible)) activeSpace=\(panel.isOnActiveSpace)")
+        }
     }
 
     private func currentScreen() -> NSScreen? {

@@ -16,6 +16,16 @@ final class EdgeGlowController {
 
     func show(_ mode: EdgeGlowMode, on screen: NSScreen) {
         let view = view(for: screen)
+        // Same as the pill: a fresh panel for each appearance, so it also shows over full-screen
+        // apps. The view and its pre-rendered masks are kept.
+        if let old = panel, !old.isVisible {
+            old.contentView = nil
+            old.close()
+            let fresh = Self.makePanel()
+            fresh.setFrame(screen.frame, display: false)
+            fresh.contentView = view
+            panel = fresh
+        }
         panel?.orderFrontRegardless()
         view.show(mode)
     }

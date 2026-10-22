@@ -66,22 +66,22 @@ final class DictationController {
 
     private func beginRecording() {
         guard !isRecording, !isProcessing else {
-            NSLog("DomnexWhisper: dictation not started (recording=%d, processing=%d)", isRecording, isProcessing)
+            Log.app.notice("dictation not started (recording=\(self.isRecording), processing=\(self.isProcessing))")
             if isProcessing { overlay.flash("Ainda a terminar o ditado anterior…") }
             return
         }
         guard !isPaused() else {
-            NSLog("DomnexWhisper: dictation not started (meeting in progress)")
+            Log.app.notice("dictation not started (meeting in progress)")
             overlay.flash("A gravar uma reunião — o ditado está em pausa")
             return
         }
         guard modelState == .ready else {
-            NSLog("DomnexWhisper: dictation not started (model not ready)")
+            Log.app.notice("dictation not started (model not ready)")
             overlay.flash("O modelo ainda está a carregar…")
             return
         }
         guard Permissions.microphoneStatus == .authorized else {
-            NSLog("DomnexWhisper: dictation not started (no microphone permission)")
+            Log.app.notice("dictation not started (no microphone permission)")
             overlay.flash("Sem acesso ao microfone")
             Task { _ = await Permissions.requestMicrophone() }
             return
@@ -132,7 +132,7 @@ final class DictationController {
             raw = try await transcriber.transcribe(samples, language: settings.language)
         } catch {
             overlay.flash("Erro na transcrição")
-            NSLog("DomnexWhisper: transcription failed: %@", error.localizedDescription)
+            Log.app.error("transcription failed: \(error.localizedDescription, privacy: .public)")
             return
         }
         guard !raw.isEmpty else {
@@ -149,7 +149,7 @@ final class DictationController {
                 formatted = true
             } catch {
                 // Never lose a dictation over a network or API problem: paste the raw transcript.
-                NSLog("DomnexWhisper: formatting failed, pasting raw transcript: %@", error.localizedDescription)
+                Log.app.error("formatting failed, pasting raw transcript: \(error.localizedDescription, privacy: .public)")
             }
         }
 

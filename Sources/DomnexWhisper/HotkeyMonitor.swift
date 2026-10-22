@@ -56,12 +56,12 @@ final class HotkeyMonitor {
     fileprivate func handle(type: CGEventType, event: CGEvent) {
         switch type {
         case .tapDisabledByTimeout, .tapDisabledByUserInput:
-            NSLog("DomnexWhisper: event tap disabled by the system, re-enabling")
+            Log.app.notice("event tap disabled by the system, re-enabling")
             if let tap { CGEvent.tapEnable(tap: tap, enable: true) }
         case .keyDown:
             if isDown && !cancelled {
                 // Only the fact that another key was pressed is logged, never which one.
-                NSLog("DomnexWhisper: hotkey cancelled (another key pressed while held)")
+                Log.app.notice("hotkey cancelled (another key pressed while held)")
                 cancelled = true
                 onCancel?()
             }
@@ -69,12 +69,12 @@ final class HotkeyMonitor {
             guard event.getIntegerValueField(.keyboardEventKeycode) == hotkey.keyCode else { return }
             let pressed = event.flags.contains(hotkey.flag)
             if pressed && !isDown {
-                NSLog("DomnexWhisper: hotkey %@ pressed", hotkey.rawValue)
+                Log.app.notice("hotkey \(self.hotkey.rawValue, privacy: .public) pressed")
                 isDown = true
                 cancelled = false
                 onPress?()
             } else if !pressed && isDown {
-                NSLog("DomnexWhisper: hotkey %@ released", hotkey.rawValue)
+                Log.app.notice("hotkey \(self.hotkey.rawValue, privacy: .public) released")
                 isDown = false
                 if !cancelled { onRelease?() }
             }
