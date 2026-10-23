@@ -16,6 +16,7 @@ rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp "$BIN_DIR/DomnexWhisper" "$APP/Contents/MacOS/DomnexWhisper"
 cp Resources/Info.plist "$APP/Contents/Info.plist"
+cp Resources/AppIcon.icns Resources/Symbol.svg "$APP/Contents/Resources/"
 
 IDENTITY="${DOMNEXWHISPER_SIGN_IDENTITY:-}"
 if [ -z "$IDENTITY" ]; then

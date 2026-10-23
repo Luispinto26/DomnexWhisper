@@ -15,7 +15,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-        statusItem.button?.image = NSImage(systemSymbolName: "mic", accessibilityDescription: "DomnexWhisper")
+        statusItem.button?.image = Self.logo ?? NSImage(systemSymbolName: "mic", accessibilityDescription: "DomnexWhisper")
         let menu = NSMenu()
         menu.delegate = self
         // Otherwise AppKit enables every item with a target, ignoring isEnabled.
@@ -102,10 +102,29 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         menu.addItem(.separator())
         menu.addItem(item("Sair do DomnexWhisper", #selector(quit), key: "q"))
 
-        let symbol = meetings.isActive ? "record.circle" : (controller.modelState == .ready ? "mic" : "mic.slash")
-        statusItem.button?.image = NSImage(systemSymbolName: symbol, accessibilityDescription: "DomnexWhisper")
-        statusItem.button?.contentTintColor = meetings.isActive ? .systemRed : nil
+        if meetings.isActive {
+            // A red record symbol makes it obvious that a meeting is being recorded.
+            statusItem.button?.image = NSImage(systemSymbolName: "record.circle", accessibilityDescription: "DomnexWhisper")
+            statusItem.button?.contentTintColor = .systemRed
+            statusItem.button?.appearsDisabled = false
+        } else {
+            statusItem.button?.image = Self.logo ?? NSImage(systemSymbolName: "mic", accessibilityDescription: "DomnexWhisper")
+            statusItem.button?.contentTintColor = nil
+            statusItem.button?.appearsDisabled = controller.modelState != .ready
+        }
     }
+
+    /// The Domnex symbol as a template image, so macOS tints it for light and dark menu bars.
+    /// Nil when running outside the app bundle (e.g. `swift run`).
+    private static let logo: NSImage? = {
+        guard let url = Bundle.main.url(forResource: "Symbol", withExtension: "svg"),
+              let image = NSImage(contentsOf: url) else { return nil }
+        image.isTemplate = true
+        image.accessibilityDescription = "DomnexWhisper"
+        let height: CGFloat = 16
+        image.size = NSSize(width: height * image.size.width / image.size.height, height: height)
+        return image
+    }()
 
     private func addMeetingItems(to menu: NSMenu) {
         if let session = meetings.session, session.isActive {

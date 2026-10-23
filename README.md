@@ -13,11 +13,19 @@ open ~/Applications/DomnexWhisper.app
 
 A app é assinada com o primeiro certificado *Apple Development* do Porta-chaves (ou com `DOMNEXWHISPER_SIGN_IDENTITY`). Assinar sempre com o mesmo certificado mantém as permissões entre compilações.
 
+## Ícones
+
+O ícone da app (`Resources/AppIcon.icns`) é gerado a partir do símbolo da Domnex em `Resources/Symbol.svg`. O mesmo símbolo é usado na barra de menus. Para gerar de novo depois de mudar o símbolo:
+
+```bash
+swift scripts/make-icons.swift
+```
+
 ## Primeira utilização
 
 1. **Microfone**: aceita o pedido do macOS.
 2. **Acessibilidade**: em Definições do Sistema › Privacidade e Segurança › Acessibilidade, ativa o *DomnexWhisper*. É necessária para detetar a tecla e para colar (⌘V).
-3. **Modelo de voz**: na primeira vez, descarrega o modelo escolhido (632 MB ou 216 MB) do Hugging Face (`argmaxinc/whisperkit-coreml`) para `~/Library/Application Support/DomnexWhisper/Models`. Depois o Core ML prepara-o para o teu chip, o que pode demorar alguns minutos. O estado aparece no menu do ícone 🎙.
+3. **Modelo de voz**: na primeira vez, descarrega o modelo escolhido (632 MB ou 216 MB) do Hugging Face (`argmaxinc/whisperkit-coreml`) para `~/Library/Application Support/DomnexWhisper/Models`. Depois o Core ML prepara-o para o teu chip, o que pode demorar alguns minutos. O estado aparece no menu do ícone da Domnex, na barra de menus.
 4. **Chave do Claude** (opcional): em Definições…, cola a tua chave da API da Anthropic. Fica guardada no Porta-chaves. Sem chave, a transcrição é colada tal como sai.
 
 A tecla por omissão é o **⌥ Option direito**. Se a usares num atalho (por exemplo ⌥2 = @), o ditado é cancelado.

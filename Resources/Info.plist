@@ -8,6 +8,8 @@
 	<string>DomnexWhisper</string>
 	<key>CFBundleExecutable</key>
 	<string>DomnexWhisper</string>
+	<key>CFBundleIconFile</key>
+	<string>AppIcon</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.luispinto.domnexwhisper</string>
 	<key>CFBundleInfoDictionaryVersion</key>
